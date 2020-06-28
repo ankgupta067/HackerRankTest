@@ -9,6 +9,7 @@ var index = require('./routes/index');
 var eraseEvents = require('./routes/eraseEvents');
 var events = require('./routes/events');
 var actor = require('./routes/actor');
+const { InitializeDatabase } = require('./InitializeLocalDatabase');
 
 var app = express();
 
@@ -46,6 +47,19 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+const server = app.listen(8080, ()=>{
+  InitializeDatabase();
+  console.log(" server started");
+})
+
+process.on('SIGINT', () => {
+  console.log('Shutting down  server');
+  server.close(() => {
+    console.log(' server is down now.');
+    process.exit();
+  });
 });
 
 module.exports = app;
